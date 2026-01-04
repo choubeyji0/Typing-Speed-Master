@@ -1,3 +1,8 @@
+/* ==========================
+   Typing Speed Test Styles
+   Author: Abhishek Choubey
+   ========================== */
+
 :root {
   --bg: #0f1724;
   --card: #0b1220;
@@ -31,7 +36,7 @@ header {
   gap: 16px;
 }
 
-h1 { margin: 0; font-size: 20px; }
+h1 { margin: 0; font-size: 22px; }
 .meta { color: var(--muted); font-size: 13px; }
 
 .grid {
@@ -55,6 +60,7 @@ h1 { margin: 0; font-size: 20px; }
   min-height: 160px;
   overflow: auto;
   font-size: 16px;
+  cursor: text;
 }
 
 .controls {
@@ -70,25 +76,18 @@ button {
   border-radius: 8px;
   color: inherit;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-button.primary {
-  background: linear-gradient(90deg,var(--accent),#3b82f6);
-  border: 0;
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
-button.warn {
-  background: linear-gradient(90deg,#fb7185,#f97316);
-  border: 0;
-}
+button.primary { background: linear-gradient(90deg,var(--accent),#3b82f6); border: 0; }
+button.warn { background: linear-gradient(90deg,#fb7185,#f97316); border: 0; }
 
-.stats {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
 .stat {
   background: rgba(255,255,255,0.02);
   padding: 10px;
@@ -96,11 +95,9 @@ button.warn {
   min-width: 100px;
   text-align: center;
 }
-
 .stat .big { font-size: 18px; font-weight: 700; }
 
 .input-area { margin-top: 12px; }
-
 textarea {
   width: 100%;
   height: 120px;
@@ -110,33 +107,33 @@ textarea {
   border: 1px dashed rgba(255,255,255,0.03);
   color: inherit;
   font-size: 15px;
+  resize: none;
 }
 
 .result { display: flex; flex-direction: column; gap: 10px; }
-
 .progress {
   height: 12px;
   background: rgba(255,255,255,0.03);
   border-radius: 8px;
   overflow: hidden;
 }
-
 .progress > i {
   display: block;
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg,var(--accent),#2dd4bf);
+  transition: width 0.2s;
 }
-
-.small { font-size: 13px; color: var(--muted); }
-.preview { font-size: 13px; color: var(--muted); margin-top: 8px; }
 
 .char.correct { color: var(--success); }
 .char.incorrect { color: var(--danger); text-decoration: underline; }
 
+.preview { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.small { font-size: 13px; color: var(--muted); }
+
 footer { margin-top: 16px; color: var(--muted); font-size: 13px; }
 
-@media (max-width:880px) {
+@media (max-width: 880px){
   .grid { grid-template-columns: 1fr; }
   .wrap { margin: 12px; }
 }
