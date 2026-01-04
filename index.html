@@ -1,34 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Speed Master</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Typing Speed Master</h1>
-        <p class="instructions">Test your typing speed! Type the highlighted text as accurately as possible.</p>
+  <div class="text-center text-gray-400 text-sm mb-4">Created by Abhishek Choubey</div>
+  <div class="text-center text-gray-400 text-sm mb-4">B.Tech CSE <strong>Major Project</strong></div>
+  <div class="text-center text-gray-400 text-sm mb-4">Roll No. <strong>0610CS233D01</strong></div>
 
-        <div class="card">
-            <div id="text-to-type" class="text-to-type">Click "Start" to begin the typing test!</div>
-            <textarea id="input-box" placeholder="Start typing here..." disabled></textarea>
-        </div>
+  <div class="wrap" role="main">
+    <header>
+      <div>
+        <h1>Typing Speed Test</h1>
+        <div class="meta">Measure your WPM, accuracy, and CPM — Major Project</div>
+      </div>
+      <div class="meta">Time: <span id="display-timer">00:00</span></div>
+    </header>
 
-        <div class="controls">
-            <button id="start-btn">Start</button>
-            <button id="reset-btn">Reset</button>
-        </div>
+    <div class="grid">
+      <section class="card">
+        <div>
+          <div class="small">Test passage</div>
+          <div id="passage" class="passage" tabindex="0" aria-label="Typing test passage"></div>
+          <div class="controls">
+            <button id="change-sample">Change passage</button>
+            <button id="paste-text">Paste own text</button>
+            <button id="restart" class="primary">Restart</button>
+            <button id="finish" class="warn">Finish</button>
+          </div>
 
-        <div class="stats">
-            <div><strong>Time Left:</strong> <span id="time">60</span>s</div>
-            <div><strong>WPM:</strong> <span id="wpm">0</span></div>
-            <div><strong>Accuracy:</strong> <span id="accuracy">0</span>%</div>
+          <div class="input-area">
+            <div class="small">Type here (focus will start the timer automatically)</div>
+            <textarea id="input" aria-label="Typing input" placeholder="Click here and start typing..."></textarea>
+          </div>
         </div>
+      </section>
+
+      <aside class="card">
+        <div class="result">
+          <div class="stats">
+            <div class="stat">
+              <div class="small">WPM</div>
+              <div id="wpm" class="big">0</div>
+            </div>
+            <div class="stat">
+              <div class="small">Accuracy</div>
+              <div id="accuracy" class="big">100%</div>
+            </div>
+            <div class="stat">
+              <div class="small">CPM</div>
+              <div id="cpm" class="big">0</div>
+            </div>
+            <div class="stat">
+              <div class="small">Elapsed</div>
+              <div id="elapsed" class="big">00:00</div>
+            </div>
+          </div>
+
+          <div class="small">Progress</div>
+          <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+
+          <div class="preview" id="live-preview">Live preview: <span id="preview-text"></span></div>
+        </div>
+      </aside>
     </div>
 
-    <script src="script.js"></script>
+    <footer>Tip: Start typing to begin the timer. Press Finish when done.</footer>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
