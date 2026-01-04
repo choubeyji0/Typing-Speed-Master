@@ -5,24 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typing Speed Master</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h1>Typing Speed Master</h1>
-        
-        <p id="text-to-type">Click "Start" to begin the typing test!</p>
-        
-        <textarea id="input-box" placeholder="Start typing here..." disabled></textarea>
-        
+        <p class="instructions">Test your typing speed! Type the highlighted text as accurately as possible.</p>
+
+        <div class="card">
+            <div id="text-to-type" class="text-to-type">Click "Start" to begin the typing test!</div>
+            <textarea id="input-box" placeholder="Start typing here..." disabled></textarea>
+        </div>
+
         <div class="controls">
             <button id="start-btn">Start</button>
             <button id="reset-btn">Reset</button>
         </div>
-        
-        <div class="results">
-            <p>Time Left: <span id="time">60</span>s</p>
-            <p>Words Typed: <span id="words">0</span></p>
-            <p>Accuracy: <span id="accuracy">0</span>%</p>
+
+        <div class="stats">
+            <div><strong>Time Left:</strong> <span id="time">60</span>s</div>
+            <div><strong>WPM:</strong> <span id="wpm">0</span></div>
+            <div><strong>Accuracy:</strong> <span id="accuracy">0</span>%</div>
         </div>
     </div>
 
