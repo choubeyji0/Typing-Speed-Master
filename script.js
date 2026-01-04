@@ -1,104 +1,136 @@
-const textSamples = [
-    "The quick brown fox jumps over the lazy dog.",
-    "Typing speed tests help improve your keyboard skills.",
-    "JavaScript can make websites interactive and fun.",
-    "Consistent practice is key to mastering typing speed.",
-    "GitHub Pages allows free hosting of static websites.",
-    "Focus on accuracy before speed, speed will follow naturally.",
-    "Professional typists practice for hours every day."
+// Sample passages
+const SAMPLES = [
+  `Computer science is built on the foundation of problem-solving, logical thinking, and continuous learning. A CS student often works with programming languages, algorithms, and data structures to create efficient solutions. As technology evolves rapidly, students must adapt to new tools, frameworks, and industry practices. Whether debugging code, designing software, or exploring emerging fields like artificial intelligence, the journey of a CS student is filled with curiosity, creativity, and innovation.`
 ];
 
-let timer;
-let timeLeft = 60;
-let wpm = 0;
+const passageEl = document.getElementById('passage');
+const inputEl = document.getElementById('input');
+const wpmEl = document.getElementById('wpm');
+const accuracyEl = document.getElementById('accuracy');
+const cpmEl = document.getElementById('cpm');
+const elapsedEl = document.getElementById('elapsed');
+const progressBar = document.getElementById('progress-bar');
+const previewText = document.getElementById('preview-text');
+const displayTimer = document.getElementById('display-timer');
 
-const textElement = document.getElementById('text-to-type');
-const inputBox = document.getElementById('input-box');
-const startBtn = document.getElementById('start-btn');
-const resetBtn = document.getElementById('reset-btn');
-const timeElement = document.getElementById('time');
-const wpmElement = document.getElementById('wpm');
-const accuracyElement = document.getElementById('accuracy');
+let sampleText = SAMPLES[0];
+let startTime = null;
+let timerInterval = null;
+let finished = false;
 
-let currentText = '';
-let totalTyped = 0;
-let correctChars = 0;
-
-function startGame() {
-    // Reset variables
-    clearInterval(timer);
-    timeLeft = 60;
-    totalTyped = 0;
-    correctChars = 0;
-    inputBox.value = '';
-    inputBox.disabled = false;
-    inputBox.focus();
-    timeElement.textContent = timeLeft;
-    wpmElement.textContent = 0;
-    accuracyElement.textContent = 0;
-
-    // Select random text
-    currentText = textSamples[Math.floor(Math.random() * textSamples.length)];
-    renderText();
-
-    // Start timer
-    timer = setInterval(() => {
-        timeLeft--;
-        timeElement.textContent = timeLeft;
-        if (timeLeft <= 0) endGame();
-    }, 1000);
+function setPassage(text){
+  sampleText = text;
+  passageEl.innerHTML = '';
+  for(let ch of text){
+    const span = document.createElement('span');
+    span.textContent = ch;
+    span.className = 'char';
+    passageEl.appendChild(span);
+  }
+  resetTest(true);
 }
 
-function renderText() {
-    textElement.innerHTML = '';
-    currentText.split('').forEach(char => {
-        const span = document.createElement('span');
-        span.textContent = char;
-        textElement.appendChild(span);
-    });
+function resetTest(keepInput=false){
+  clearInterval(timerInterval);
+  startTime = null;
+  finished = false;
+  if(!keepInput) inputEl.value = '';
+  elapsedEl.textContent = '00:00';
+  displayTimer.textContent = '00:00';
+  wpmEl.textContent = '0';
+  cpmEl.textContent = '0';
+  accuracyEl.textContent = '100%';
+  progressBar.style.width = '0%';
+  previewText.textContent = '';
+  passageEl.querySelectorAll('.char').forEach(s => s.classList.remove('correct','incorrect'));
 }
 
-inputBox.addEventListener('input', () => {
-    const typed = inputBox.value.split('');
-    const spans = textElement.querySelectorAll('span');
+function formatTime(seconds){
+  const mm = String(Math.floor(seconds/60)).padStart(2,'0');
+  const ss = String(Math.floor(seconds%60)).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
 
-    correctChars = 0;
+function updateStats(){
+  const typed = inputEl.value;
+  const totalChars = sampleText.length;
+  const correctChars = Array.from(typed).reduce((acc,ch,i)=> acc + (sampleText[i] === ch ? 1 : 0), 0);
+  const accuracy = typed.length === 0 ? 100 : Math.max(0, Math.round((correctChars / typed.length) * 100));
+  const elapsedSec = startTime ? (Date.now() - startTime) / 1000 : 0;
+  const minutes = Math.max(1/60, elapsedSec / 60);
+  const wordsTyped = typed.trim().length === 0 ? 0 : typed.trim().split(/\s+/).length;
+  const wpm = Math.round(wordsTyped / minutes);
+  const cpm = Math.round((typed.length / minutes));
 
-    spans.forEach((span, idx) => {
-        const char = typed[idx];
-        if (char == null) {
-            span.classList.remove('correct', 'incorrect');
-        } else if (char === span.textContent) {
-            span.classList.add('correct');
-            span.classList.remove('incorrect');
-            correctChars++;
-        } else {
-            span.classList.add('incorrect');
-            span.classList.remove('correct');
-        }
-    });
+  wpmEl.textContent = isFinite(wpm) ? wpm : 0;
+  cpmEl.textContent = isFinite(cpm) ? cpm : 0;
+  accuracyEl.textContent = `${accuracy}%`;
+  elapsedEl.textContent = formatTime(elapsedSec);
+  displayTimer.textContent = formatTime(elapsedSec);
 
-    totalTyped = typed.length;
-    const accuracy = totalTyped === 0 ? 0 : Math.round((correctChars / totalTyped) * 100);
-    accuracyElement.textContent = accuracy;
+  const progress = Math.min(100, Math.round((typed.length / totalChars) * 100));
+  progressBar.style.width = progress + '%';
 
-    wpm = Math.round((correctChars / 5) / ((60 - timeLeft) / 60) || 0);
-    wpmElement.textContent = wpm;
+  previewText.textContent = typed.slice(-60);
+  passageEl.querySelectorAll('.char').forEach((span, idx) =>{
+    const ch = typed[idx];
+    span.classList.remove('correct','incorrect');
+    if(ch == null) return;
+    if(ch === span.textContent) span.classList.add('correct');
+    else span.classList.add('incorrect');
+  });
+
+  if(typed.length >= totalChars && !finished){
+    finishTest();
+  }
+}
+
+function startTimerIfNeeded(){
+  if(startTime) return;
+  startTime = Date.now();
+  timerInterval = setInterval(() => updateStats(), 200);
+  updateStats();
+}
+
+function finishTest(){
+  finished = true;
+  clearInterval(timerInterval);
+  updateStats();
+  passageEl.focus();
+}
+
+// Event bindings
+inputEl.addEventListener('input', ()=>{
+  startTimerIfNeeded();
+  updateStats();
 });
 
-function endGame() {
-    clearInterval(timer);
-    inputBox.disabled = true;
-}
+passageEl.addEventListener('click', ()=> inputEl.focus());
 
-startBtn.addEventListener('click', startGame);
-resetBtn.addEventListener('click', () => {
-    clearInterval(timer);
-    timeLeft = 60;
-    inputBox.value = '';
-    inputBox.disabled = true;
-    timeElement.textContent = timeLeft;
-    wpmElement.textContent = 0;
-    accuracyElement.textContent = 0;
-    textElement.textContent = "Click 'Start' to begin the typing test!";
+document.getElementById('restart').addEventListener('click', ()=> resetTest());
+document.getElementById('finish').addEventListener('click', ()=> finishTest());
+
+document.getElementById('change-sample').addEventListener('click', ()=>{
+  const other = SAMPLES.filter(s=>s!==sampleText);
+  if(other.length === 0) return;
+  const pick = other[Math.floor(Math.random()*other.length)];
+  setPassage(pick);
 });
+
+document.getElementById('paste-text').addEventListener('click', ()=>{
+  const userText = prompt('Paste your test passage (replace current):');
+  if(userText && userText.trim().length>0) setPassage(userText.trim());
+});
+
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='r'){
+    e.preventDefault(); resetTest();
+  }
+});
+
+passageEl.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' ') inputEl.focus();
+});
+
+// initial setup
+setPassage(sampleText);
